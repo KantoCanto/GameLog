@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the User model
+model User {
+  id Int      @id @default(autoincrement())
+  username String
+  email String     @unique
+  password String  
+}
+
+// Define the Game model
+model Game {
+  id Int      @id @default(autoincrement())
+  title String
+  description String
+  releaseDate DateTime
+  publisher String
+}
+
+// Define the Rating model to represent user ratings for games
+model Rating {
+  id Int      @id @default(autoincrement())
+  userId Int
+  gameId Int
+  value Int    
+}
+
+// Define the Review model for user reviews of games
+model Review {
+  id Int      @id @default(autoincrement())
+  userId Int
+  gameId Int
+  text String
+}
