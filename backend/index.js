@@ -31,6 +31,7 @@
 
 
 import express from "express";
+import session from "express-session"
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
@@ -48,6 +49,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
 
 //const db = knex(knexConfig);
 
