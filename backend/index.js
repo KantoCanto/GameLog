@@ -33,16 +33,23 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import cors from "cors";
+//import knex from "knex";
+//import knexConfig from "./knexfile.js";
 import mongoose from "mongoose";
+import mockData from "./data/mockdata.js";
+
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+//const db = knex(knexConfig);
 
 //db connect
 async function connectDB(){
@@ -60,8 +67,20 @@ connectDB();
 
 //routes
 
-app.get("/", (req,res) =>{
-    res.send("Hello World")
+app.get("/", async (req,res) =>{
+    res.send("Hello World");
+//     try {
+//     const result = await db.raw('SELECT 1+1 as result');
+//     res.json({ message: 'Database connection successful', result: result.rows[0].result });
+//   } catch (error) {
+//     console.error('Error connecting to the database:', error.message);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+})
+
+app.get("/api/data", (req,res) => {
+    //read the mock data from the file
+    res.json(mockData)
 })
 
 app.listen(PORT, () => {
