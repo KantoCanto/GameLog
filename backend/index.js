@@ -39,6 +39,7 @@ import cors from "cors";
 //import knexConfig from "./knexfile.js";
 import mongoose from "mongoose";
 import mockData from "./data/mockdata.js";
+import fetch from "node-fetch";
 
 
 const PORT = process.env.PORT || 5000;
@@ -46,15 +47,16 @@ const MONGO_URI = process.env.MONGO_URI;
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: true }
 }))
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
 
 //const db = knex(knexConfig);
 
@@ -71,6 +73,32 @@ async function connectDB(){
 }
 
 connectDB();
+
+const fetchData = async () => {
+    try{
+        const response = await fetch("https://api.igdb.com/v4/games", {
+            method: "POST",
+            headers: {
+               "Client-ID": process.env.TWITCH_CLIENT_ID,
+               "Authorization": process.env.ACCESS_TOKEN,
+            },
+            body: {
+                "fields": "name,cover.url,first_release_date,platforms.name,genres.name,summary; where id = 1942; sort first_release_date desc; limit 10;"
+            }
+        });
+
+        if(!response.ok){
+            throw new Error(`failed to fetch data. Status: ${response.status}`)
+        }
+
+        const data = await response.json();
+        console.log("Fetched Data: ",data)
+
+    }catch(error){
+        console.error("Error fetching data: ", error.message)
+    }
+}
+
 
 //routes
 
@@ -126,8 +154,10 @@ app.get("/profile/:userId", (req, res) => {
 })
 
 //game list
-app.get("/games", (req, res) => {
+app.get("/games", async (req, res) => {
     //get a list of all games
+    // call to the api to get the list of games
+    fetchData();
     //action --> retrieve and display games
 })
 
